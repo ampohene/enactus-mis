@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block body %}<h1>Reports</h1>
+{% if can('attendance_view') %}<div class="panel"><h2>Attendance by meeting (last 12)</h2>
+{% if trend %}<svg class="chart" viewBox="0 0 720 240" role="img" aria-label="Attendance percentage per meeting">
+{% for y in (0,50,100) %}<line x1="40" x2="710" y1="{{ 200-y*1.6 }}" y2="{{ 200-y*1.6 }}" stroke="#d9dee6"/><text x="6" y="{{ 204-y*1.6 }}">{{ y }}%</text>{% endfor %}
+{% for t in trend %}{% set pct = (100*t.p/t.t) if t.t else 0 %}{% set x = 52 + loop.index0*54 %}
+<rect class="bar" x="{{ x }}" y="{{ 200-pct*1.6 }}" width="38" height="{{ pct*1.6 }}" rx="4"><title>{{ t.title }} ({{ t.held_on }}): {{ pct|round|int }}%</title></rect>
+<text x="{{ x+19 }}" y="{{ 196-pct*1.6 }}" text-anchor="middle">{{ pct|round|int }}</text><text x="{{ x+19 }}" y="218" text-anchor="middle">{{ t.held_on[5:] }}</text>{% endfor %}</svg>
+{% else %}<p class="muted">Record a meeting's attendance to see this chart.</p>{% endif %}</div>
+<div class="panel"><h2>Attendance mix</h2>
+{% set total = mix.values()|sum %}{% if total %}{% set cols = {'present':'#1f7a5a','late':'#f2b705','excused':'#2f5fb3','absent':'#b4332a'} %}
+<svg class="chart mixbar" viewBox="0 0 720 36" role="img" aria-label="Share of attendance statuses">{% set ns = namespace(x=0) %}
+{% for s in att %}{% set w = (mix.get(s,0)/total*720) %}<rect x="{{ ns.x }}" y="0" width="{{ w }}" height="36" fill="{{ cols[s] }}"><title>{{ s|capitalize }}: {{ mix.get(s,0) }}</title></rect>{% set ns.x = ns.x + w %}{% endfor %}</svg>
+<div class="legend">{% for s in att %}<span><i class="lg-{{ s }}"></i>{{ s|capitalize }} {{ mix.get(s,0) }}</span>{% endfor %}</div>{% else %}<p class="muted">No attendance recorded yet.</p>{% endif %}</div>
+<div class="panel"><h2>Member attendance</h2>
+{% for p in people %}<div class="person"><span>{{ p.name }}</span><span><progress max="100" value="{{ (100*p.p/p.t)|round|int }}"></progress> {{ (100*p.p/p.t)|round|int }}% <span class="muted">({{ p.p|int }}/{{ p.t|int }})</span></span></div>
+{% else %}<p class="muted">Nothing to show yet.</p>{% endfor %}<p><a class="btn alt" href="{{ url_for('export_attendance') }}">Export attendance</a></p></div>
+{% if byunit %}<div class="panel"><h2>Attendance by unit</h2>
+{% for u in byunit %}<div class="person"><span>{{ u.name }} <span class="muted">({{ u.n }} member{{ 's' if u.n != 1 }})</span></span><span>{% if u.t %}<progress max="100" value="{{ (100*u.p/u.t)|round|int }}"></progress> {{ (100*u.p/u.t)|round|int }}%{% else %}-{% endif %}</span></div>{% endfor %}</div>{% endif %}
+{% endif %}
+{% if can('budget_view') %}<div class="panel"><h2>Projects</h2><table><thead><tr><th>Status</th><th>Projects</th><th>Total budget</th></tr></thead><tbody>
+{% for r in pj %}<tr><td><span class="tag {{ r.status }}">{{ r.status }}</span></td><td>{{ r.n }}</td><td>{{ money(r.b) }}</td></tr>{% else %}<tr><td colspan="3" class="muted">No projects yet.</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+{% if can('finance') %}<div class="panel"><h2>Money collected</h2><table><thead><tr><th>Type</th><th>Payments</th><th>Total</th></tr></thead><tbody>
+{% for r in fin %}<tr><td>{{ r.kind }}</td><td>{{ r.n }}</td><td>{{ money(r.s) }}</td></tr>{% else %}<tr><td colspan="3" class="muted">No payments yet.</td></tr>{% endfor %}</tbody></table></div>{% endif %}{% endblock %}

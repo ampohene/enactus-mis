@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Sign in{% endblock %}
+{% block body %}<img class="emblem" src="{{ url_for('static', filename='img/emblem.png') }}" alt="Enactus UTAS emblem">
+<h1>Enactus UTAS</h1><p class="muted">Management Information System</p>
+<form method="post" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}">
+{% if google %}<a class="gbtn" href="{{ url_for('google_start') }}"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7a14.500 14.500 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.600l7.9-6.100z"/><path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.500-5.800c-2.100 1.400-4.800 2.300-8.400 2.300-6.300 0-11.600-4.100-13.500-9.800l-7.900 6.100C6.500 42.600 14.600 48 24 48z"/></svg>Sign in with Google</a>
+<div class="or">or use your password</div>{% endif %}
+<label for="email">Email</label><input id="email" name="email" type="email" required autofocus autocomplete="username">
+<label for="pw">Password</label><div class="pw"><input id="pw" name="password" type="password" required autocomplete="current-password"><button type="button" data-pw="pw">Show</button></div>
+<p><button class="btn">Sign in</button></p></form>
+<p class="muted"><a href="{{ url_for('forgot') }}">Forgot your password?</a></p>{% endblock %}

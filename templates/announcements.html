@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block body %}<h1>Announcements</h1>
+{% if can('announce') %}<div class="row"><a class="btn" href="{{ url_for('announcement_new') }}">New announcement</a></div>{% endif %}
+{% for a in rows %}<div class="panel"><div class="row"><b>{{ a.title }}</b><span class="muted">{{ a.author }}, {{ a.at[:10] }}</span>
+{% if can('announce') %}<form method="post" action="{{ url_for('announcement_delete', aid=a.id) }}" data-confirm="Remove this announcement?"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn alt sm">Remove</button></form>{% endif %}</div>
+<p class="pre">{{ a.body }}</p></div>{% else %}<p class="muted">No announcements yet.</p>{% endfor %}{% endblock %}

@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block body %}<h1>Activity log</h1><p class="muted">Latest 300 actions.</p>
+<div class="scroll"><table><tr><th>When</th><th>Who</th><th>Action</th></tr>{% for r in rows %}<tr><td>{{ r.at }}</td><td>{{ r.who }}</td><td>{{ r.action }}</td></tr>{% endfor %}</table></div>{% endblock %}

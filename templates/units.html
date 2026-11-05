@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block body %}<h1>Units</h1>
+<p class="muted">Units are the working groups inside the club, such as IT, Field Agents or Research. A member can belong to more than one.</p>
+{% if is_top() %}<form method="post" class="panel row"><input type="hidden" name="csrf" value="{{ csrf }}">
+<input type="text" name="name" placeholder="New unit name, e.g. Research" maxlength="40" required aria-label="Unit name">
+<input type="text" name="description" placeholder="What the unit does (optional)" maxlength="200" aria-label="Description"><button class="btn">Create unit</button></form>{% endif %}
+<div class="stats">{% for r in rows %}<a class="stat unitcard" href="{{ url_for('unit', uid=r.id) }}"><b data-count="{{ r.n }}">{{ r.n }}</b><span>{{ r.name }}</span></a>
+{% else %}<p class="muted">No units yet.{% if is_top() %} Create the first one above.{% endif %}</p>{% endfor %}</div>
+{% if rows and none %}<p class="muted">{{ none }} active member{{ 's' if none != 1 }} not in any unit yet.</p>{% endif %}{% endblock %}

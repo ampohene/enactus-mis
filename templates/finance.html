@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block body %}<h1>Finance</h1>
+{% if not mail %}<div class="panel alert">Receipt emails are not set up yet. Payments are still recorded; add the SMTP settings from the README to start emailing receipts.</div>{% endif %}
+<div class="stats"><div class="stat"><b>{{ money(tot) }}</b><span>Total collected</span></div><div class="stat"><b>{{ money(dues) }}</b><span>Dues collected</span></div></div>
+<div class="row"><a class="btn" href="{{ url_for('payment_new') }}">Record payment</a><a class="btn alt" href="{{ url_for('export_payments') }}">Export payments</a>
+<input class="search" type="search" placeholder="Search payments..." data-filter="paytable" aria-label="Search payments"></div>
+<div class="scroll"><table id="paytable"><thead><tr><th>Receipt</th><th>Date</th><th>Member</th><th>Type</th><th>Amount</th><th>Email</th></tr></thead><tbody>
+{% for p in rows %}<tr class="{{ 'muted' if p.voided }}"><td><a href="{{ url_for('receipt', pid=p.id) }}">{{ p.receipt_no }}</a>{% if p.voided %} (voided){% endif %}</td><td>{{ p.paid_on }}</td><td>{{ p.member }}</td><td>{{ p.kind }}</td><td>{{ money(p.amount) }}</td><td>{{ 'Sent' if p.emailed_at else 'Not sent' }}</td></tr>
+{% else %}<tr><td colspan="6" class="muted">No payments recorded yet.</td></tr>{% endfor %}</tbody></table></div>
+<h2>Dues paid per member</h2><div class="scroll"><table><thead><tr><th>Member</th><th>Dues paid</th></tr></thead><tbody>{% for r in per %}<tr><td>{{ r.name }}</td><td>{{ money(r.paid) }}</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block body %}<h1>Hello, {{ user.name.split()[0] }}</h1>
+<p class="muted">{{ ROLES.get(user.role) }}{% if my_units %} &middot; {% for u in my_units %}<span class="tag">{{ u }}</span> {% endfor %}{% endif %}</p>
+{% if awaiting %}<a class="panel alert" href="{{ url_for('approvals') }}"><b>{{ awaiting }}</b> change{{ 's' if awaiting != 1 }} waiting for your decision &rarr;</a>{% endif %}
+<div class="stats">
+<div class="stat"><b data-count="{{ stats.members }}">{{ stats.members }}</b><span>Active members</span></div>
+<div class="stat"><b data-count="{{ stats.meetings }}">{{ stats.meetings }}</b><span>Meetings held</span></div>
+<div class="stat"><b data-count="{{ stats.ongoing }}">{{ stats.ongoing }}</b><span>Ongoing projects</span></div>
+<div class="stat"><b data-count="{{ stats.done }}">{{ stats.done }}</b><span>Completed projects</span></div>
+<div class="stat"><b {% if mine.t %}data-count="{{ (100*mine.a/mine.t)|round|int }}" data-suffix="%"{% endif %}>{% if mine.t %}{{ (100*mine.a/mine.t)|round|int }}%{% else %}-{% endif %}</b><span>Your attendance</span></div></div>
+{% if anns %}<h2>Announcements</h2>{% for a in anns %}<div class="panel"><b>{{ a.title }}</b> <span class="muted">{{ a.author }}, {{ a.at[:10] }}</span><p>{{ a.body }}</p></div>{% endfor %}<p><a href="{{ url_for('announcements') }}">All announcements</a></p>{% endif %}
+<h2>Current projects</h2>
+<table><thead><tr><th>Project</th><th>Status</th></tr></thead><tbody>
+{% for p in projects %}<tr><td><a href="{{ url_for('project', pid=p.id) }}">{{ p.name }}</a></td><td><span class="tag {{ p.status }}">{{ p.status }}</span></td></tr>
+{% else %}<tr><td colspan="2" class="muted">No current projects yet.</td></tr>{% endfor %}</tbody></table>
+{% if recent %}<h2>Recent meetings</h2>
+<table><thead><tr><th>Date</th><th>Meeting</th><th>Attended</th></tr></thead><tbody>
+{% for m in recent %}<tr><td>{{ m.held_on }}</td><td><a href="{{ url_for('meeting', mid=m.id) }}">{{ m.title }}</a></td><td>{{ m.p|int }} of {{ m.t|int }}</td></tr>{% endfor %}</tbody></table>{% endif %}
+{% if subs %}<h2>Your recent submissions</h2><table><thead><tr><th>Change</th><th>Status</th></tr></thead><tbody>
+{% for s in subs %}<tr><td>{{ s.summary }}</td><td><span class="tag st-{{ s.status }}">{{ s.status|capitalize }}</span></td></tr>{% endfor %}</tbody></table>{% endif %}
+{% endblock %}

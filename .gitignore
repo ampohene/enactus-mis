@@ -1,0 +1,12 @@
+# Secrets and live data: never commit these
+.env
+*.db
+uploads/
+backups/
+
+# Python / local tooling
+venv/
+.venv/
+__pycache__/
+*.pyc
+smtp_test*.py

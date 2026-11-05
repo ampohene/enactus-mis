@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block body %}<h1>New announcement</h1>
+{% if not is_top() %}<p class="muted">It goes live once the President and Vice President approve it.</p>{% endif %}
+<form method="post" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="t">Title</label><input id="t" name="title" type="text" required>
+<label for="b">Message</label><textarea id="b" name="body"></textarea>
+<p><button class="btn">{{ 'Post' if is_top() else 'Submit for approval' }}</button> <a class="btn alt" href="{{ url_for('announcements') }}">Cancel</a></p></form>{% endblock %}

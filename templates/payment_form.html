@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block body %}<h1>{{ 'Edit payment ' + p.receipt_no if p else 'Record payment' }}</h1>
+{% if p and not is_top() %}<p class="muted">Edits to a recorded payment go to the President and Vice President for approval.</p>{% endif %}
+<form method="post" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}"><div class="grid2">
+{% if p %}<div><label>Member</label><input type="text" value="{{ p.member }}" disabled></div>{% else %}
+<div><label for="m">Member</label><select id="m" name="member_id" required><option value="">Choose...</option>{% for m in people %}<option value="{{ m.id }}">{{ m.name }}</option>{% endfor %}</select></div>{% endif %}
+<div><label for="k">Type</label><select id="k" name="kind">{% for k in kinds %}<option {{ 'selected' if p and p.kind==k }}>{{ k }}</option>{% endfor %}</select></div>
+<div><label for="a">Amount ({{ CURRENCY }})</label><input id="a" name="amount" type="number" step="0.01" min="0.01" value="{{ p.amount if p else '' }}" required></div>
+<div><label for="d">Date paid</label><input id="d" name="paid_on" type="date" value="{{ p.paid_on if p else today }}" required></div>
+<div><label for="me">Method</label><select id="me" name="method">{% for k in methods %}<option {{ 'selected' if p and p.method==k }}>{{ k }}</option>{% endfor %}</select></div>
+<div><label for="ds">Description (e.g. Semester 1 dues)</label><input id="ds" name="description" type="text" value="{{ (p.description or '') if p else '' }}"></div></div>
+<label for="n">Note</label><textarea id="n" name="note">{{ (p.note or '') if p else '' }}</textarea>
+{% if not p %}<label class="check"><input type="checkbox" name="send" checked> Email the receipt to the member now</label>{% endif %}
+<p><button class="btn">{{ 'Submit change' if p else 'Record and issue receipt' }}</button> <a class="btn alt" href="{{ url_for('finance') }}">Cancel</a></p></form>{% endblock %}

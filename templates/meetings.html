@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block body %}<h1>Meetings</h1>
+{% if can('meetings_manage') %}<div class="row"><a class="btn" href="{{ url_for('meeting_form') }}">New meeting</a></div>{% endif %}
+<table><thead><tr><th>Date</th><th>Meeting</th><th>Location</th>{% if can('attendance_view') %}<th>Attended</th>{% endif %}<th>You</th><th></th></tr></thead><tbody>
+{% for m in rows %}<tr><td>{{ m.held_on }}</td><td>{% if can('attendance_view') %}<a href="{{ url_for('meeting', mid=m.id) }}">{{ m.title }}</a>{% else %}{{ m.title }}{% endif %}</td><td>{{ m.location }}</td>
+{% if can('attendance_view') %}<td>{{ m.p|int }} of {{ m.t|int }}</td>{% endif %}<td>{{ m.mine|capitalize if m.mine else '-' }}</td>
+<td>{% if can('meetings_manage') %}<a href="{{ url_for('meeting_form', mid=m.id) }}">Edit</a>{% endif %}</td></tr>
+{% else %}<tr><td colspan="6" class="muted">No meetings yet.</td></tr>{% endfor %}</tbody></table>{% endblock %}

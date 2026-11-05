@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block body %}<h1>Members</h1>
+<div class="row"><input class="search" type="search" placeholder="Search members..." data-filter="mtable" aria-label="Search members">
+{% if can('members_edit') %}<a class="btn" href="{{ url_for('member_form') }}">Add member</a>{% endif %}
+<a class="btn alt" href="{{ url_for('export_members') }}">Export members</a>
+{% if can('attendance_view') %}<a class="btn alt" href="{{ url_for('export_attendance') }}">Export attendance</a>{% endif %}</div>
+<p class="muted">Click a row for a quick view.</p>
+<div class="scroll"><table id="mtable"><thead><tr><th>Name</th><th>Portfolio</th><th>Units</th><th>Level</th><th>Attendance</th><th></th></tr></thead><tbody>
+{% for m in rows %}<tr class="click{{ ' muted' if not m.active }}" data-member='{{ {"name": m.name, "edit": url_for("member_form", mid=m.id) if can("members_edit") else "", "rows": [["Portfolio", ROLES.get(m.role, m.role)], ["Position", m.position], ["Email", m.email], ["Phone", m.phone], ["Units", m.units], ["Academic department", m.department], ["Level", m.level], ["Student ID", m.student_id], ["Date joined", m.date_joined], ["Emergency contact", m.emergency_name], ["Emergency phone", m.emergency_phone], ["Status", "Active" if m.active else "Inactive"]]}|tojson }}'>
+<td>{{ m.name }}{% if not m.active %} (inactive){% endif %}</td><td>{{ ROLES.get(m.role, m.role) }}</td><td>{{ m.units or '-' }}</td><td>{{ m.level }}</td>
+<td>{% if m.recorded %}<progress max="100" value="{{ (100*m.attended/m.recorded)|round|int }}"></progress> {{ (100*m.attended/m.recorded)|round|int }}%{% else %}-{% endif %}</td>
+<td>{% if can('members_edit') %}<a href="{{ url_for('member_form', mid=m.id) }}">Edit</a>{% endif %}</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

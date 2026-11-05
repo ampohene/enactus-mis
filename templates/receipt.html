@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block body %}<h1>Receipt {{ p.receipt_no }}</h1>
+<div class="row noprint"><a class="btn alt" href="{{ url_for('finance') }}">All payments</a><button class="btn alt" type="button" data-print>Print</button>
+{% if not p.voided %}<a class="btn alt" href="{{ url_for('payment_edit', pid=p.id) }}">Edit</a>
+<form method="post" action="{{ url_for('resend_receipt', pid=p.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn">{{ 'Resend email' if p.emailed_at else 'Send email receipt' }}</button></form>
+<button class="btn danger" type="button" data-modal="void">Void</button>{% endif %}</div>
+<div class="panel receipt"><img src="{{ url_for('static', filename='img/logo-wordmark.png') }}" alt="" class="rlogo"><h2>{{ ORG }} - Payment receipt{% if p.voided %} (VOID){% endif %}</h2>
+<table class="plain"><tr><td>Receipt no.</td><td><b>{{ p.receipt_no }}</b></td></tr><tr><td>Received from</td><td>{{ p.member }}{% if p.email %} ({{ p.email }}){% endif %}</td></tr>
+<tr><td>For</td><td>{{ p.kind }}{% if p.description %} - {{ p.description }}{% endif %}</td></tr><tr><td>Amount</td><td><b>{{ money(p.amount) }}</b></td></tr>
+<tr><td>Date paid</td><td>{{ p.paid_on }}</td></tr><tr><td>Method</td><td>{{ p.method }}</td></tr><tr><td>Processed by</td><td>{{ p.recorded_by }}</td></tr>
+{% if p.note %}<tr><td>Note</td><td>{{ p.note }}</td></tr>{% endif %}{% if p.voided %}<tr><td>Voided because</td><td>{{ p.void_reason }}</td></tr>{% endif %}</table><p class="credit">{{ ORG }} MIS &middot; System by {{ built_by }}</p></div>
+<p class="muted noprint">Email: {{ 'sent ' + p.emailed_at[:16]|replace('T',' ') if p.emailed_at else (p.email_status or 'not sent yet') }}</p>
+<dialog id="void"><form method="post" action="{{ url_for('payment_void', pid=p.id) }}" class="dlg"><input type="hidden" name="csrf" value="{{ csrf }}"><h3>Void this payment?</h3>
+<p>{% if not is_top() %}This goes to the President and Vice President for approval.{% else %}It will be excluded from all totals.{% endif %}</p><label for="rs">Reason</label><textarea id="rs" name="reason" required></textarea>
+<div class="row"><button class="btn alt" type="button" data-close>Cancel</button><button class="btn danger">Void payment</button></div></form></dialog>{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block body %}<h1>{{ 'Edit' if m else 'Add' }} member</h1>
+{% if not admin %}<p class="muted">Your changes are sent to the President and Vice President for approval.</p>{% endif %}
+<form method="post" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}"><div class="grid2">
+{% for k,l,t in [('name','Full name','text'),('email','Email (used for Google sign-in too)','email'),('phone','Phone','text'),('department','Academic department (e.g. Engineering)','text'),('level','Level (e.g. 200)','text'),('position','Position (e.g. Secretary)','text'),('student_id','Student ID','text'),('date_joined','Date joined','date'),('emergency_name','Emergency contact name','text'),('emergency_phone','Emergency contact phone','text')] %}
+<div><label for="{{ k }}">{{ l }}</label><input id="{{ k }}" name="{{ k }}" type="{{ t }}" value="{{ (m[k] if m else '') or '' }}" {{ 'required' if k in ('name','email') }}></div>{% endfor %}
+{% if admin %}<div><label for="role">Portfolio (what they may change)</label><select id="role" name="role">
+{% for r,l in ROLES.items() %}<option value="{{ r }}" {{ 'selected' if m and m.role==r }}>{{ l }}</option>{% endfor %}</select></div>
+<div><label for="password">{{ 'New password (blank keeps current)' if m else 'Temporary password (optional, 10+)' }}</label>
+<input id="password" name="password" type="password" minlength="10" autocomplete="new-password"></div>{% endif %}</div>
+{% if admin %}<label>Units</label><input type="hidden" name="units_present" value="1">{% for u in all_units %}<label class="check"><input type="checkbox" name="unit" value="{{ u.id }}" {{ 'checked' if u.id in my_units }}> {{ u.name }}</label>{% else %}<p class="muted">No units yet. Create them under Units first.</p>{% endfor %}{% endif %}
+{% if admin and not m %}<p class="muted">Leave the password blank if this person will sign in with Google or a reset link.</p>{% endif %}
+{% if admin and m %}<label class="check"><input type="checkbox" name="active" {{ 'checked' if m.active }}> Active (untick to remove access)</label>{% endif %}
+<p><button class="btn">Save member</button> <a class="btn alt" href="{{ url_for('members') }}">Cancel</a></p></form>
+{% if admin and m %}<form method="post" action="{{ url_for('make_reset', mid=m.id) }}" class="panel" data-confirm="Create a one-time password reset link for {{ m.name }}? Any earlier link stops working.">
+<input type="hidden" name="csrf" value="{{ csrf }}"><b>Forgot password?</b><p class="muted">Create a link that {{ m.name }} can open to choose a new password. It works for 24 hours.</p><button class="btn alt">Create reset link</button></form>{% endif %}
+{% if link %}<dialog id="rl" data-auto><div class="dlg"><h3>Reset link ready</h3><p>Send this to {{ m.name }} privately (WhatsApp or SMS). It works once, for 24 hours.</p>
+<div class="linkbox" id="rl-link">{{ link }}</div><div class="row"><button class="btn alt" type="button" data-close>Close</button><button class="btn" type="button" data-copy="rl-link">Copy link</button></div></div></dialog>{% endif %}
+{% endblock %}

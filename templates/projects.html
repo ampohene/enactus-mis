@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block body %}<h1>Projects</h1>
+<div class="row"><input class="search" type="search" placeholder="Search projects..." data-filter="ptable" aria-label="Search projects">
+{% if can('projects_manage') %}<a class="btn" href="{{ url_for('project_form') }}">New project</a>{% endif %}</div>
+<div class="scroll"><table id="ptable"><thead><tr><th>Project</th><th>Status</th><th>Lead</th><th>Dates</th></tr></thead><tbody>
+{% for p in rows %}<tr><td><a href="{{ url_for('project', pid=p.id) }}">{{ p.name }}</a></td><td><span class="tag {{ p.status }}">{{ p.status }}</span></td><td>{{ p.lead or '-' }}</td><td>{{ p.start_date or '?' }} to {{ p.end_date or 'ongoing' }}</td></tr>
+{% else %}<tr><td colspan="4" class="muted">No projects yet.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

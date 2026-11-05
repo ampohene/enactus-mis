@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block title %}Set password{% endblock %}
+{% block body %}<img class="emblem" src="{{ url_for('static', filename='img/emblem.png') }}" alt="">
+<h1>Set your password</h1>
+<form method="post" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="n">New password (10+ characters)</label><div class="pw"><input id="n" name="new" type="password" required minlength="10" autocomplete="new-password" autofocus><button type="button" data-pw="n">Show</button></div>
+<p><button class="btn">Save password</button></p></form>{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block body %}<h1>{{ 'Edit' if p else 'New' }} project</h1>
+{% if not is_top() %}<p class="muted">Sent to the President and Vice President for approval.</p>{% endif %}
+{% if not mgr %}<p class="muted">You can update the status, dates, summary and impact. The name, lead, budget and team are set by the Project Manager.</p>{% endif %}
+<form method="post" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}">
+{% if mgr %}<label for="name">Project name</label><input id="name" name="name" type="text" value="{{ p.name if p else '' }}" required>{% endif %}
+<label for="status">Status</label><select id="status" name="status">{% for s in statuses %}<option {{ 'selected' if p and p.status==s }}>{{ s }}</option>{% endfor %}</select>
+{% if mgr %}<label for="lead">Project lead</label><select id="lead" name="lead_id"><option value="">None</option>{% for m in people %}<option value="{{ m.id }}" {{ 'selected' if p and p.lead_id==m.id }}>{{ m.name }}</option>{% endfor %}</select>{% endif %}
+<label for="sd">Start date</label><input id="sd" name="start_date" type="date" value="{{ (p.start_date or '') if p else '' }}">
+<label for="ed">End date</label><input id="ed" name="end_date" type="date" value="{{ (p.end_date or '') if p else '' }}">
+{% if mgr %}<label for="b">Budget ({{ CURRENCY }})</label><input id="b" name="budget" type="number" step="0.01" min="0" value="{{ p.budget if p else 0 }}">{% endif %}
+<label for="s">Summary</label><textarea id="s" name="summary">{{ (p.summary or '') if p else '' }}</textarea>
+<label for="i">Impact (people reached, income raised, outcomes)</label><textarea id="i" name="impact">{{ (p.impact or '') if p else '' }}</textarea>
+{% if mgr %}<label>Team</label>{% for m in people %}<label class="check"><input type="checkbox" name="team" value="{{ m.id }}" {{ 'checked' if m.id in team }}> {{ m.name }}</label>{% endfor %}{% endif %}
+<p><button class="btn">{{ 'Save project' if is_top() else 'Submit for approval' }}</button> <a class="btn alt" href="{{ url_for('projects') }}">Cancel</a></p></form>{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block body %}<h1>{{ p.name }}</h1>
+<div class="row"><span class="tag {{ p.status }}">{{ p.status }}</span>{% if can_edit %}<a class="btn alt" href="{{ url_for('project_form', pid=p.id) }}">Edit</a>{% endif %}<a class="btn alt" href="{{ url_for('projects') }}">All projects</a></div>
+{% if waiting %}<div class="panel alert">{{ waiting }} change{{ 's' if waiting != 1 }} to this project {{ 'is' if waiting == 1 else 'are' }} waiting for approval.</div>{% endif %}
+<div class="panel"><p><b>Lead:</b> {{ p.lead or '-' }}<br><b>Dates:</b> {{ p.start_date or '?' }} to {{ p.end_date or 'ongoing' }}
+{% if can('budget_view') %}<br><b>Budget:</b> {{ CURRENCY }} {{ '%.2f'|format(p.budget or 0) }}{% endif %}</p>
+<h2>Summary</h2><p>{{ p.summary or 'No summary yet.' }}</p><h2>Impact</h2><p>{{ p.impact or 'No impact recorded yet.' }}</p>
+<h2>Team</h2>{% for t in team %}<div>{{ t.name }} <span class="muted">{{ t.position }}</span></div>{% else %}<p class="muted">No team assigned.</p>{% endfor %}</div>
+{% if can('projects_manage') %}<div class="panel"><h2>Who may edit this project</h2>
+<p class="muted">Members you clear can update the status, dates, summary, impact and documents. Their edits still go to the President and Vice President for approval.</p>
+{% for e in editors %}<div class="file"><span>{{ e.name }}</span><form method="post" action="{{ url_for('remove_editor', pid=p.id, mid=e.id) }}" data-confirm="Remove {{ e.name }}'s clearance to edit this project?"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn alt sm">Remove</button></form></div>
+{% else %}<p class="muted">Nobody has been cleared yet.</p>{% endfor %}
+<form method="post" action="{{ url_for('add_editor', pid=p.id) }}" class="row"><input type="hidden" name="csrf" value="{{ csrf }}"><select name="member_id" aria-label="Member to clear" required><option value="">Choose a member...</option>{% for o in others %}<option value="{{ o.id }}">{{ o.name }}</option>{% endfor %}</select><button class="btn sm">Give clearance</button></form></div>{% endif %}
+<div class="panel"><h2>Documents</h2>
+{% for f in files %}<div class="file"><span><a href="{{ url_for('get_file', fid=f.id) }}">{{ f.name }}</a> <span class="muted">{{ (f.size/1024)|round|int }} KB, {{ f.by }}, {{ f.at[:10] }}</span></span>
+{% if can_edit %}<form method="post" action="{{ url_for('delete_file', fid=f.id) }}" data-confirm="Delete {{ f.name }}?"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn danger sm">Delete</button></form>{% endif %}</div>
+{% else %}<p class="muted">No documents yet.</p>{% endfor %}
+{% if can_edit %}<form method="post" action="{{ url_for('upload_file', pid=p.id) }}" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="file">Add a document (PDF, Word, Excel, PowerPoint, image; up to 12 MB)</label><input id="file" name="file" type="file" required> <button class="btn sm">Upload</button></form>{% endif %}</div>{% endblock %}

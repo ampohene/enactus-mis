@@ -1,0 +1,18 @@
+DRAFT - read the note at the bottom before relying on this.
+
+Copyright (c) 2026 ampohene. All rights reserved.
+
+Permission is granted to Enactus UTAS (the campus group) to run and modify this
+software for its own internal operations.
+
+Without written permission from the copyright holder, you may not sell, sublicense,
+or redistribute this software, in whole or in part, or remove the credit lines and
+copyright notices from it.
+
+The software is provided "as is", without warranty of any kind. The copyright holder
+is not liable for any loss or damage arising from its use.
+
+NOTE: This is a starting template, not legal advice. Agree with the club's executives
+whether the system belongs to its author or to the club, and what happens when the author
+graduates, then have someone qualified review this wording. The Enactus name and logos
+belong to Enactus and are used here only to identify the club.

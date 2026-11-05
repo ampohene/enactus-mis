@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block body %}<h1>{{ m.title }}</h1>
+<p class="muted">{{ m.held_on }}{% if m.location %} at {{ m.location }}{% endif %}</p>
+{% if pend %}<div class="panel alert">Attendance submitted by {{ pend.name }} on {{ pend.at[:10] }} is waiting for approval. The figures below are the last approved ones.</div>{% endif %}
+{% if not editable %}<p class="muted">Only the Secretary records attendance. You are viewing it.</p>{% endif %}
+<form method="post" class="panel" id="attform"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="counter"><span class="tag">Present <b id="n-present">0</b></span><span class="tag">Late <b id="n-late">0</b></span><span class="tag">Excused <b id="n-excused">0</b></span><span class="tag">Absent <b id="n-absent">0</b></span>
+{% if editable %}<button class="btn alt sm" type="button" id="mark-all">Mark everyone present</button>{% endif %}
+{% if ulist %}<select id="unitfilter" aria-label="Show one unit"><option value="">All units</option>{% for u in ulist %}<option value="{{ u.id }}">{{ u.name }}</option>{% endfor %}</select>{% endif %}</div>
+{% for p in people %}<div class="person" data-units="{{ p.uids or ',' }}"><span>{{ p.name }} <span class="muted">{{ p.position }}</span></span>
+<div class="seg">{% for s in ATT %}<label class="s-{{ s }}"><input type="radio" name="s_{{ p.id }}" value="{{ s }}" {{ 'checked' if (p.status or 'absent')==s }} {{ '' if editable else 'disabled' }}><span>{{ s|capitalize }}</span></label>{% endfor %}</div></div>{% endfor %}
+<label for="n">Minutes / notes</label><textarea id="n" name="notes" {{ '' if editable else 'readonly' }}>{{ m.notes or '' }}</textarea>
+<p>{% if editable %}<button class="btn">{{ 'Save attendance' if is_top() else 'Submit for approval' }}</button> {% endif %}<a class="btn alt" href="{{ url_for('meetings') }}">Back</a></p></form>{% endblock %}

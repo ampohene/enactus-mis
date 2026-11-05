@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block body %}<h1>{{ u.name }}</h1>
+<p class="muted">{{ u.description or 'No description.' }}</p>
+{% if is_top() %}<form method="post" action="{{ url_for('unit_members', uid=u.id) }}" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}">
+<h2>Members of this unit</h2><p class="muted">Tick everyone who belongs to {{ u.name }}, then save.</p>
+<input class="search" type="search" placeholder="Find a member..." data-filter-list="ulist" aria-label="Find a member"><div id="ulist">
+{% for p in people %}<label class="check"><input type="checkbox" name="member" value="{{ p.id }}" {{ 'checked' if p.inu }}> {{ p.name }} <span class="muted">{{ ROLES.get(p.role) }}{% if not p.active %}, inactive{% endif %}</span></label>{% endfor %}</div>
+<p><button class="btn">Save members</button> <a class="btn alt" href="{{ url_for('units') }}">Back</a></p></form>
+<form method="post" action="{{ url_for('unit_rename', uid=u.id) }}" class="panel"><input type="hidden" name="csrf" value="{{ csrf }}"><h2>Rename or describe</h2>
+<input type="text" name="name" value="{{ u.name }}" maxlength="40" required aria-label="Name"> <input type="text" name="description" value="{{ u.description or '' }}" maxlength="200" aria-label="Description"> <button class="btn alt">Save</button></form>
+<form method="post" action="{{ url_for('unit_delete', uid=u.id) }}" data-confirm="Delete the unit {{ u.name }}? People stay in the club; they just leave this unit."><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn danger">Delete unit</button></form>
+{% else %}<div class="panel"><h2>Members</h2>{% for p in people if p.inu %}<div>{{ p.name }} <span class="muted">{{ ROLES.get(p.role) }}</span></div>{% else %}<p class="muted">Nobody yet.</p>{% endfor %}</div>
+<a class="btn alt" href="{{ url_for('units') }}">Back</a>{% endif %}{% endblock %}

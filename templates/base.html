@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="author" content="{{ built_by }}">
+<title>{% block title %}Enactus UTAS MIS{% endblock %}</title>
+<link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body class="{{ '' if user else 'auth' }}">
+<div class="float" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div id="toasts" role="status" aria-live="polite">{% for m in get_flashed_messages() %}<div class="toast">{{ m }}</div>{% endfor %}</div>
+{% if user %}<div class="shell"><nav id="sidenav">
+<div class="navtop"><a class="brand" href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='img/logo-wordmark.png') }}" alt="Enactus UTAS"></a><button class="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navmenu"><span></span><span></span><span></span></button></div>
+<div class="navmenu" id="navmenu"><div class="links">
+{% set ep = request.endpoint or '' %}
+<a class="nl {{ 'on' if ep=='home' }}" href="{{ url_for('home') }}">Dashboard</a>
+{% if can('members_view') %}<a class="nl {{ 'on' if ep.startswith('member') }}" href="{{ url_for('members') }}">Members</a>
+<a class="nl {{ 'on' if ep.startswith('unit') }}" href="{{ url_for('units') }}">Units</a>{% endif %}
+<a class="nl {{ 'on' if ep.startswith('meeting') }}" href="{{ url_for('meetings') }}">Meetings</a>
+<a class="nl {{ 'on' if ep.startswith('announce') }}" href="{{ url_for('announcements') }}">Announcements</a>
+<a class="nl {{ 'on' if ep.startswith('project') or ep=='upload_file' }}" href="{{ url_for('projects') }}">Projects</a>
+{% if can('finance') %}<a class="nl {{ 'on' if ep.startswith('payment') or ep in ('finance','receipt') }}" href="{{ url_for('finance') }}">Finance</a>{% endif %}
+{% if can('reports') %}<a class="nl {{ 'on' if ep=='reports' }}" href="{{ url_for('reports') }}">Reports</a>{% endif %}
+<a class="nl {{ 'on' if ep=='approvals' }}" href="{{ url_for('approvals') }}">{{ 'Approvals' if is_top() else 'My submissions' }}{% if awaiting %} <span class="badge">{{ awaiting }}</span>{% endif %}</a>
+{% if is_top() %}<a class="nl {{ 'on' if ep=='audit' }}" href="{{ url_for('audit') }}">Activity log</a>{% endif %}
+<a class="nl {{ 'on' if ep=='password' }}" href="{{ url_for('password') }}">Change password</a>
+</div>
+<form class="foot" method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="who">{{ user.name }}<br>{{ ROLES.get(user.role) }}</div><button class="btn alt">Sign out</button>
+<div class="credit">System by {{ built_by }}</div></form></div>
+</nav><main>{% else %}<main class="login">{% endif %}
+{% block body %}{% endblock %}
+{% if not user %}<p class="credit">&copy; 2026 {{ built_by }} &middot; System by {{ built_by }}</p>{% endif %}
+</main>{% if user %}</div>
+{% set quick = can('meetings_manage') or can('announce') or can('projects_manage') or can('finance') or can('members_edit') %}
+{% if quick %}<div class="fab"><button type="button" aria-label="Quick add">+</button><div class="menu">
+{% if can('meetings_manage') %}<a href="{{ url_for('meeting_form') }}">New meeting</a>{% endif %}
+{% if can('announce') %}<a href="{{ url_for('announcement_new') }}">New announcement</a>{% endif %}
+{% if can('projects_manage') %}<a href="{{ url_for('project_form') }}">New project</a>{% endif %}
+{% if can('finance') %}<a href="{{ url_for('payment_new') }}">Record payment</a>{% endif %}
+{% if can('members_edit') %}<a href="{{ url_for('member_form') }}">Add member</a>{% endif %}</div></div>{% endif %}
+<dialog id="confirm"><div class="dlg"><h3>Are you sure?</h3><p id="confirm-msg"></p>
+<div class="row"><button class="btn alt" type="button" data-close>Cancel</button><button class="btn danger" type="button" id="confirm-yes">Yes, continue</button></div></div></dialog>
+<dialog id="qv"><div class="dlg"><h3 id="qv-name"></h3><dl id="qv-list"></dl>
+<div class="row"><button class="btn alt" type="button" data-close>Close</button><a class="btn" id="qv-edit" href="#">Edit member</a></div></div></dialog>
+{% endif %}
+<script src="{{ url_for('static', filename='app.js') }}"></script></body></html>
